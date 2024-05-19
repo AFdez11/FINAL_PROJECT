@@ -1,14 +1,19 @@
 #include <iostream>
 #include <malloc.h>
+#include <cstring> 
 
 using namespace std;
 
 struct viaje{
-    char nombre[30];
-    char matricula[30];
-    char destino [30];
 
-    int codigo;
+    int altura;
+
+    //info del viaje.
+    char nombreEmb[30]; //hace referencia al nombre de la embarcación
+    char destino [30];
+    char matricula[10];
+    char identi [15];
+
     int precio;
     int capacidad;
 
@@ -16,11 +21,78 @@ struct viaje{
     int mes;
     int year;
 
+    //info del pasajero
+    char nombrePas[20]; //hace referencia al nombre del pasajero
+    char apellidoPas[20];
+    
+    int id;
+
     viaje *izq;
     viaje *der;
 };
 
+struct viaje *raiz, *aux;
 
+void DatosViaje(){
+
+    char primerosDos[2];
+
+    aux = ((struct viaje *) malloc (sizeof(struct viaje)));
+ 
+    cout<<"Ingrese el nombre de la embaracacion: ";
+    cin>>aux->nombreEmb;
+
+    cout<<"Ingrese la matricula de la embaracacion: ";
+    cin>>aux->matricula;
+
+    cout<<"Ingrese la capacidad de la embaracacion: ";
+    cin>>aux->capacidad;
+
+    cout<<"Ingrese el destino del viaje: ";
+    cin>>aux->destino;
+
+    cout<<"Ingrese el precio del viaje: ";
+    cin>>aux->precio;
+
+    cout<<"Ingrese el dia del viaje numericamente (DD): ";
+    cin>>aux->dia;
+
+    cout<<"Ingrese el mes del viaje numericamente (MM): ";
+    cin>>aux->mes;
+
+    cout<<"Ingrese el a"<<char(164) <<"o del viaje numericamente (YYYY): ";
+    cin>>aux->year;
+    
+    strncpy(primerosDos, aux->matricula, 2);
+ 
+    aux->izq = aux->der = NULL;
+    aux->altura = 1;
+    
+}
+
+void DatosPasajeros(){
+
+    cout<<"Ingrese el primer nombre del pasajero: "<<endl;
+    cin>>aux->nombrePas;
+
+    cout<<"Ingrese el primer nombre del pasajero: "<<endl;
+    cin>>aux->apellidoPas;
+
+    cout<<"Ingrese el primer nombre del pasajero: "<<endl;
+    cin>>aux->id;
+
+}
+
+struct viaje * insertar(struct viaje* viaje)
+{
+    if (viaje == NULL)
+    {
+        return aux;
+    }
+
+    
+    
+};
 
 
 int main(){

@@ -10,9 +10,9 @@ struct viaje{
 
     //info del viaje.
     char nombreEmb[30]; //hace referencia al nombre de la embarcación
-    char destino [30];
-    char matricula[10];
-    char identi [15];
+    char destino [30]; // destino viaje
+    char matricula[10]; // matricula de la embarcacion
+    char identi [15]; 
 
     int precio;
     int capacidad;
@@ -85,15 +85,62 @@ void DatosPasajeros(){
 
 struct viaje * insertar(struct viaje* viaje)
 {
-    if (viaje == NULL)
-    {
+    if (viaje == NULL){
         return aux;
     }
 
-    
-    
-};
+    if (aux->matricula < viaje->matricula) {
+        viaje->izq = insertar(viaje->izq);
+    } else if (aux->matricula > viaje->matricula) {
+        viaje->der = insertar(viaje->der);
+    } else {
+        return viaje;
+    }
 
+    viaje->altura = 1 + mayor(ObtenerAltura(viaje->izq), ObtenerAltura(viaje->der));
+    
+     int balance = ObtenerAltura(viaje);
+
+    if (balance > 1 && aux->matricula < viaje->izq->matricula) {
+        return rotarDerecha(viaje);
+    }
+
+    if (balance < -1 && aux->matricula > viaje->der->matricula) {
+        return rotarIzquierda(viaje);
+    }
+
+    if (balance > 1 && aux->matricula > viaje->izq->matricula) {
+        viaje->izq = rotarIzquierda(viaje->izq);
+        return rotarDerecha(viaje);
+    }
+
+    if (balance < -1 && aux->matricula < viaje->der->matricula) {
+        viaje->der = rotarDerecha(viaje->der);
+        return rotarIzquierda(viaje);
+    }
+
+    return viaje;
+}
+
+int ObtenerAltura(struct viaje *n){
+
+}
+
+int mayor(int A, int B){
+    return (A > B) ? A : B;
+}
+
+struct viaje* rotarDerecha(struct viaje *y) {
+   
+}
+
+struct viaje* rotarIzquierda(struct viaje *x) {
+   
+}
+
+int ObtenerBalance(struct viaje *n){
+    
+}
 
 int main(){
 
@@ -105,7 +152,7 @@ int main(){
     {
         cout<<""<<endl;
         cout<<"-------------------------------------------------------------"<<endl;
-        cout<<"           NOMBRE DEL PROGRAMA      "<<endl;
+        cout<<"           EMBARCACIONES 'LA CONCHA'      "<<endl;
         cout<<"-------------------------------------------------------------"<<endl;
         cout<<"1.       REGISTRAR NUEVO VIAJE."<<endl;
         cout<<"2.       BUSCAR VIAJE."<<endl;

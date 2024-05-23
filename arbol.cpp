@@ -7,19 +7,20 @@ using namespace std;
 struct viaje{
 
     int altura;
+    
 
     //info del viaje.
     char nombreEmb[30]; //hace referencia al nombre de la embarcación
     char destino [30]; // destino viaje
     char matricula[10]; // matricula de la embarcacion
-    char identi [15]; 
+    char identi [20]; 
+
+    char dia[03];
+    char mes[03];
+    char year[05];
 
     int precio;
     int capacidad;
-
-    int dia;
-    int mes;
-    int year;
 
     //info del pasajero
     char nombrePas[20]; //hace referencia al nombre del pasajero
@@ -29,14 +30,44 @@ struct viaje{
 
     viaje *izq;
     viaje *der;
+    viaje *sig;
 };
 
-struct viaje *raiz, *aux;
+struct viaje *raiz, *aux, *aux2,
+*cab, *auxP, *auxP2, *Bviaje  /*Auxiliar para pasajeros*/;
 
-void DatosViaje(){
+void posicionarIdenti(){
 
-    char primerosDos[2];
+    if (aux->identi < aux2->identi) {
 
+        if (aux2->izq != NULL){
+            aux2 = aux2->izq;
+            posicionarIdenti();
+        } else {
+            aux2->izq = aux;
+            aux = NULL;
+        }
+        
+    } else if (aux->identi > aux2->identi){
+        
+            if(aux2->der != NULL){
+            aux2 = aux2->der;
+            posicionarIdenti();
+        }   
+        else {
+
+            aux2->der = aux;
+            aux = NULL;
+        }
+        
+    }
+
+}
+
+void datosViaje(){
+
+    char primerosDos[12];
+    
     aux = ((struct viaje *) malloc (sizeof(struct viaje)));
  
     cout<<"Ingrese el nombre de la embaracacion: ";
@@ -62,36 +93,263 @@ void DatosViaje(){
 
     cout<<"Ingrese el a"<<char(164) <<"o del viaje numericamente (YYYY): ";
     cin>>aux->year;
+
+    strcpy(primerosDos, aux->matricula);
     
-    strncpy(primerosDos, aux->matricula, 2);
- 
+    for (int i = 2; i < 12; i++)
+    {
+        primerosDos[i] = '\0';
+    }
+
+    strcpy(aux->identi,primerosDos);
+    strcat(aux->identi,aux->year);
+    strcat(aux->identi,aux->mes);
+    strcat(aux->identi,aux->dia);
+
+}
+
+void registrarViaje(){
+
+    datosViaje();
+    
+    cout<<endl;
+    cout<<"********************************"<<endl;
+    cout<<"Viaje registrado con exito."<<endl;
+    cout<<"********************************"<<endl;
+
+    if (raiz == NULL){ 
+    
+        raiz = aux;
+        aux = NULL;
+        free(aux);
+    }else {
+        aux2 = raiz;
+        posicionarIdenti();
+    }
+    
     aux->izq = aux->der = NULL;
     aux->altura = 1;
+}
+
+
+void buscarViaje(char *BuscarV, viaje *rama){
+
+    int opcion = 0;
+
+    cout<<"¿Por cual medio desea realizar su busqueda?"<<endl;
+    cout<<"1.       IDENTIFICADOR."<<endl;
+    cout<<"2.       MATRICULA."<<endl;
+    cout<<"Opcion: ";
+    cin>>opcion;
+
+    switch (opcion) {
+
+    case 1:
+
+    cout<<"Ingrese el identificador del viaje que desea obtener: ";
+    cin>>BuscarV;
     
+        if (BuscarV == rama->identi)
+    {
+        Bviaje = rama;
+
+    } else {
+
+        if (rama->izq != NULL){
+
+            buscarViaje(BuscarV, rama->izq);
+        }
+        if (rama->der != NULL){
+            
+            buscarViaje(BuscarV, rama->der);
+        }
+        
+    }
+
+    cout<<"Su viaje solicitado es:"<<endl;
+    cout<<Bviaje<<endl;
+
+
+        break;
+    
+    case 2:
+
+    cout<<"Ingrese la matricula de la embarcación que desea obtener: ";
+    cin>>BuscarV;
+    
+        if (BuscarV == rama->matricula)
+    {
+        Bviaje = rama;
+
+    } else {
+
+        if (rama->izq != NULL){
+
+            buscarViaje(BuscarV, rama->izq);
+        }
+        if (rama->der != NULL){
+            
+            buscarViaje(BuscarV, rama->der);
+        }
+        
+    }
+
+    cout<<"Su viaje solicitado es:"<<endl;
+    cout<<Bviaje<<endl;
+
+        break;
+
+    default:
+
+        cout<<"Opcion invalida."<<endl;
+        break;
+    }
+
+    
+    
+
 }
 
-void DatosPasajeros(){
+void buscar(char *BuscarV, viaje *Rama){
 
-    cout<<"Ingrese el primer nombre del pasajero: "<<endl;
-    cin>>aux->nombrePas;
+    if (BuscarV == Rama->identi)
+    {
+        Bviaje = Rama;
+    } else {
 
-    cout<<"Ingrese el primer nombre del pasajero: "<<endl;
-    cin>>aux->apellidoPas;
+        if (Rama->izq != NULL){
 
-    cout<<"Ingrese el primer nombre del pasajero: "<<endl;
-    cin>>aux->id;
+            buscarViaje(BuscarV, Rama->izq);
+        }
+        if (Rama->der != NULL){
+            
+            buscarViaje(BuscarV, Rama->der);
+        }
+        
+    }
+}
+
+void registrarPasajeros(){
+
+    int cont = 0; //se encargará de incrementar con respecto a los pasajeros que se ingresen.
+
+    if (cont <= aux->capacidad)
+    {
+        if (cab == NULL)
+        {
+            cab = (struct viaje *) malloc (sizeof(struct viaje));
+            cout<<"Ingrese el primer nombre del pasajero: "<<endl;
+            cin>>cab->nombrePas;
+    
+            cout<<"Ingrese el primer nombre del pasajero: "<<endl;
+            cin>>cab->apellidoPas;
+    
+            cout<<"Ingrese el primer nombre del pasajero: "<<endl;
+            cin>>cab->id;
+    
+            cab->sig = NULL;
+    
+        } else {
+        
+            auxP = (struct viaje *) malloc (sizeof(struct viaje));
+            cout<<"Ingrese el primer nombre del pasajero: "<<endl;
+            cin>>auxP->nombrePas;
+    
+            cout<<"Ingrese el primer nombre del pasajero: "<<endl;
+            cin>>auxP->apellidoPas;
+    
+            cout<<"Ingrese el primer nombre del pasajero: "<<endl;
+            cin>>auxP->id;
+            auxP->sig = NULL;
+    
+            while (auxP2->sig != NULL)
+            {
+                auxP2 = auxP2->sig;
+                auxP2->sig = auxP;
+                auxP2 = auxP = NULL;
+                free(auxP2);
+                free(auxP2);
+            }
+    
+            cab->sig = NULL;
+            aux = NULL;
+            free(aux);
+    
+        }
+        
+    }
+    
+
+    cont++;
+
 
 }
 
-struct viaje * insertar(struct viaje* viaje)
+
+int ObtenerAltura(struct viaje *n){
+
+    if (n == NULL)
+    {
+        return 0;
+    }
+
+    return n->altura;
+
+}
+
+int mayor(int A, int B){
+    return (A > B) ? A : B;
+}
+
+struct viaje *rotarDerecha(struct viaje *y) {
+
+    struct viaje *x  = y->izq;
+    struct viaje *T2 = x->der;
+
+    x->der = y;
+    y->izq = T2;
+
+    y->altura = mayor(ObtenerAltura(y->izq), ObtenerAltura(y->der)) +1;
+    x->altura = mayor(ObtenerAltura(x->izq), ObtenerAltura(x->der)) +1;
+
+    return x;
+}
+
+struct viaje* rotarIzquierda(struct viaje *x) {
+    
+    struct viaje *y = x->der;
+    struct viaje *T2 = y->izq;
+
+    y->izq = x;
+    x->der = T2;
+
+    x->altura = mayor(ObtenerAltura(x->izq), ObtenerAltura(x->der)) + 1;
+    y->altura = mayor(ObtenerAltura(y->izq), ObtenerAltura(y->der)) + 1;
+
+    return y;
+}
+
+int ObtenerBalance(struct viaje *n){
+    
+    if (n == NULL)
+    {
+        return 0;
+    }
+
+    return ObtenerAltura(n->izq) - ObtenerAltura (n->der);
+    
+
+}
+
+struct viaje* insertar(struct viaje* viaje)
 {
     if (viaje == NULL){
         return aux;
     }
 
-    if (aux->matricula < viaje->matricula) {
+    if (aux->identi < viaje->identi) {
         viaje->izq = insertar(viaje->izq);
-    } else if (aux->matricula > viaje->matricula) {
+    } else if (aux->identi > viaje->identi) {
         viaje->der = insertar(viaje->der);
     } else {
         return viaje;
@@ -101,20 +359,20 @@ struct viaje * insertar(struct viaje* viaje)
     
      int balance = ObtenerAltura(viaje);
 
-    if (balance > 1 && aux->matricula < viaje->izq->matricula) {
+    if (balance > 1 && aux->identi < viaje->izq->identi) {
         return rotarDerecha(viaje);
     }
 
-    if (balance < -1 && aux->matricula > viaje->der->matricula) {
+    if (balance < -1 && aux->identi > viaje->der->identi) {
         return rotarIzquierda(viaje);
     }
 
-    if (balance > 1 && aux->matricula > viaje->izq->matricula) {
+    if (balance > 1 && aux->identi > viaje->izq->identi) {
         viaje->izq = rotarIzquierda(viaje->izq);
         return rotarDerecha(viaje);
     }
 
-    if (balance < -1 && aux->matricula < viaje->der->matricula) {
+    if (balance < -1 && aux->identi < viaje->der->identi) {
         viaje->der = rotarDerecha(viaje->der);
         return rotarIzquierda(viaje);
     }
@@ -122,29 +380,9 @@ struct viaje * insertar(struct viaje* viaje)
     return viaje;
 }
 
-int ObtenerAltura(struct viaje *n){
-
-}
-
-int mayor(int A, int B){
-    return (A > B) ? A : B;
-}
-
-struct viaje* rotarDerecha(struct viaje *y) {
-   
-}
-
-struct viaje* rotarIzquierda(struct viaje *x) {
-   
-}
-
-int ObtenerBalance(struct viaje *n){
-    
-}
-
 int main(){
 
-    int opcion = 0;
+    int opcion = 0, opcion2 = 0;
     cout<<"";
     cout<<"Bienvenido, digite la opcion que desee realizar."<<endl;
 
@@ -169,6 +407,10 @@ int main(){
         switch (opcion) {
             
             case 1:
+
+                registrarViaje();
+                cout<<endl;
+                
                 break;
 
             case 2:
@@ -197,5 +439,3 @@ int main(){
     } while (opcion != 7);
     
 }
-
-

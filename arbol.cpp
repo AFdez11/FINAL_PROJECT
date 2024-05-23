@@ -1,6 +1,7 @@
 #include <iostream>
 #include <malloc.h>
 #include <cstring> 
+#include <string>
 
 using namespace std;
 
@@ -13,8 +14,8 @@ struct viaje{
     char nombreEmb[30]; //hace referencia al nombre de la embarcación
     char destino [30]; // destino viaje
     char matricula[10]; // matricula de la embarcacion
-    char identi [20]; 
-
+    char identi [20];
+     
     char dia[03];
     char mes[03];
     char year[05];
@@ -26,7 +27,7 @@ struct viaje{
     char nombrePas[20]; //hace referencia al nombre del pasajero
     char apellidoPas[20];
     
-    int id;
+    int id = 0;
 
     viaje *izq;
     viaje *der;
@@ -38,7 +39,9 @@ struct viaje *raiz, *aux, *aux2,
 
 void posicionarIdenti(){
 
-    if (aux->identi < aux2->identi) {
+    int comparacion = stricmp(aux->identi,aux2->identi);
+
+    if (comparacion < 0) {
 
         if (aux2->izq != NULL){
             aux2 = aux2->izq;
@@ -48,9 +51,9 @@ void posicionarIdenti(){
             aux = NULL;
         }
         
-    } else if (aux->identi > aux2->identi){
+    } else if (comparacion > 0){
         
-            if(aux2->der != NULL){
+        if(aux2->der != NULL){
             aux2 = aux2->der;
             posicionarIdenti();
         }   
@@ -60,6 +63,18 @@ void posicionarIdenti(){
             aux = NULL;
         }
         
+    } else {
+
+        if(aux2->der != NULL){
+            aux2 = aux2->der;
+            posicionarIdenti();
+        }   
+        else {
+
+            aux2->der = aux;
+            aux = NULL;
+        }
+
     }
 
 }
@@ -106,6 +121,8 @@ void datosViaje(){
     strcat(aux->identi,aux->mes);
     strcat(aux->identi,aux->dia);
 
+    aux->izq = aux->der = NULL;
+    aux->altura = 1;
 }
 
 void registrarViaje(){
@@ -127,29 +144,12 @@ void registrarViaje(){
         posicionarIdenti();
     }
     
-    aux->izq = aux->der = NULL;
-    aux->altura = 1;
 }
 
-
-void buscarViaje(char *BuscarV, viaje *rama){
-
-    int opcion = 0;
-
-    cout<<"¿Por cual medio desea realizar su busqueda?"<<endl;
-    cout<<"1.       IDENTIFICADOR."<<endl;
-    cout<<"2.       MATRICULA."<<endl;
-    cout<<"Opcion: ";
-    cin>>opcion;
-
-    switch (opcion) {
-
-    case 1:
-
-    cout<<"Ingrese el identificador del viaje que desea obtener: ";
-    cin>>BuscarV;
+void buscarViajeI(char BuscarV[10], viaje *rama){ //será utilizado para buscar el viaje por medio del identificador
     
-        if (BuscarV == rama->identi)
+
+    if (BuscarV == rama->identi)
     {
         Bviaje = rama;
 
@@ -157,27 +157,20 @@ void buscarViaje(char *BuscarV, viaje *rama){
 
         if (rama->izq != NULL){
 
-            buscarViaje(BuscarV, rama->izq);
+            buscarViajeI(BuscarV, rama->izq);
         }
         if (rama->der != NULL){
             
-            buscarViaje(BuscarV, rama->der);
+            buscarViajeI(BuscarV,rama->der);
         }
         
     }
+}
 
-    cout<<"Su viaje solicitado es:"<<endl;
-    cout<<Bviaje<<endl;
+void buscarViajeM(char BuscarV[13], viaje *rama){
 
 
-        break;
-    
-    case 2:
-
-    cout<<"Ingrese la matricula de la embarcación que desea obtener: ";
-    cin>>BuscarV;
-    
-        if (BuscarV == rama->matricula)
+    if (BuscarV == rama->matricula)
     {
         Bviaje = rama;
 
@@ -185,29 +178,15 @@ void buscarViaje(char *BuscarV, viaje *rama){
 
         if (rama->izq != NULL){
 
-            buscarViaje(BuscarV, rama->izq);
+            buscarViajeM(BuscarV, rama->izq);
         }
         if (rama->der != NULL){
             
-            buscarViaje(BuscarV, rama->der);
+            buscarViajeM(BuscarV,rama->der);
         }
         
     }
-
-    cout<<"Su viaje solicitado es:"<<endl;
-    cout<<Bviaje<<endl;
-
-        break;
-
-    default:
-
-        cout<<"Opcion invalida."<<endl;
-        break;
-    }
-
-    
-    
-
+ 
 }
 
 void buscar(char *BuscarV, viaje *Rama){
@@ -219,11 +198,11 @@ void buscar(char *BuscarV, viaje *Rama){
 
         if (Rama->izq != NULL){
 
-            buscarViaje(BuscarV, Rama->izq);
+            buscar(BuscarV, Rama->izq);
         }
         if (Rama->der != NULL){
             
-            buscarViaje(BuscarV, Rama->der);
+            buscar(BuscarV, Rama->der);
         }
         
     }
@@ -382,7 +361,8 @@ struct viaje* insertar(struct viaje* viaje)
 
 int main(){
 
-    int opcion = 0, opcion2 = 0;
+    int opcion = 0, opcion2 = 0, opcion3 = 0;
+    char ident[20], matri = 0;
     cout<<"";
     cout<<"Bienvenido, digite la opcion que desee realizar."<<endl;
 
@@ -414,6 +394,48 @@ int main(){
                 break;
 
             case 2:
+                cout<<"Por cual medio desea realizar su busqueda?"<<endl;
+                cout<<endl;
+                cout<<"1.       IDENTIFICADOR."<<endl;
+                cout<<"2.       MATRICULA."<<endl;
+                cout<<"Opcion: ";
+                cin>>opcion3;
+
+                switch (opcion3)
+                {
+
+                case 1:
+                    cout<<"Ingrese el identificador del viaje el cual desea obtener: ";
+                    cin>>ident;
+                    cout<<endl;
+
+                    buscarViajeI(ident, raiz);
+                    if (ident == Bviaje->identi)
+                    {
+                        cout<<"Embarcación: "<<Bviaje->nombreEmb<<" Con viaje en: "<<" "<<Bviaje->year<<" "<<
+                        Bviaje->mes<<" "<<Bviaje->dia<<endl;
+                        cout<<"- Matricula: "<<Bviaje->matricula<<endl;
+                        cout<<"- Capacidad: "<<Bviaje->capacidad<<endl;
+                        cout<<"- Destino: "<<Bviaje->destino<<endl;
+                        cout<<"- Precio: "<<Bviaje->precio<<endl;
+                    }
+                    
+                    break;
+
+                case 2:
+                    cout<<"Ingrese la matricula de la embarcación la cual desea obtener: ";
+                    cin>>matri;
+                    cout<<endl;
+                    break;
+                
+                default:
+                    cout<<"Opcion no valida."<<endl;
+                    cout<<endl;                    
+
+                    break;
+                }
+
+
                 break;
 
             case 3:

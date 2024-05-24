@@ -14,7 +14,7 @@ struct viaje{
     char nombreEmb[30]; //hace referencia al nombre de la embarcación
     char destino [30]; // destino viaje
     char matricula[10]; // matricula de la embarcacion
-    char identi [20];
+    char identi [10];
      
     char dia[03];
     char mes[03];
@@ -27,7 +27,7 @@ struct viaje{
     char nombrePas[20]; //hace referencia al nombre del pasajero
     char apellidoPas[20];
     
-    int id = 0;
+    int id;
 
     viaje *izq;
     viaje *der;
@@ -39,7 +39,7 @@ struct viaje *raiz, *aux, *aux2,
 
 void posicionarIdenti(){
 
-    int comparacion = stricmp(aux->identi,aux2->identi);
+    int comparacion = strcmp(aux->identi,aux2->identi);
 
     if (comparacion < 0) {
 
@@ -123,16 +123,20 @@ void datosViaje(){
 
     aux->izq = aux->der = NULL;
     aux->altura = 1;
+
+    cout<<endl;
+    cout<<"**********************************"<<endl;
+    cout<<"Su identificador es: "<<aux->identi<<endl;
+    cout<<"**********************************"<<endl;
 }
 
 void registrarViaje(){
-
     datosViaje();
     
     cout<<endl;
-    cout<<"********************************"<<endl;
+    cout<<"---------------------------"<<endl;
     cout<<"Viaje registrado con exito."<<endl;
-    cout<<"********************************"<<endl;
+    cout<<"---------------------------"<<endl;
 
     if (raiz == NULL){ 
     
@@ -149,7 +153,7 @@ void registrarViaje(){
 void buscarViajeI(char BuscarV[10], viaje *rama){ //será utilizado para buscar el viaje por medio del identificador
     
 
-    if (BuscarV == rama->identi)
+    if (strcmp(BuscarV, rama->identi) == 0)
     {
         Bviaje = rama;
 
@@ -167,10 +171,26 @@ void buscarViajeI(char BuscarV[10], viaje *rama){ //será utilizado para buscar 
     }
 }
 
-void buscarViajeM(char BuscarV[13], viaje *rama){
+void viajeI(char BuscarV[10]){
+    if (strcmp(BuscarV, Bviaje->identi) == 0)
+    {
+        cout<<"Embarcacion: "<<Bviaje->nombreEmb<<" Con viaje en: "<<" "<<Bviaje->dia<<" "<<
+        Bviaje->mes<<" "<<Bviaje->year<<endl;
+        cout<<"     - Matricula: "<<Bviaje->matricula<<endl;
+        cout<<"     - Capacidad: "<<Bviaje->capacidad<<endl;
+        cout<<"     - Destino: "<<Bviaje->destino<<endl;
+        cout<<"     - Precio: "<<Bviaje->precio<<endl;
+    } else {
+
+        cout<<"No se encontro el identificador"<<endl;
+    }
+    
+}
+
+void buscarViajeM(char BuscarV[10], viaje *rama){
 
 
-    if (BuscarV == rama->matricula)
+    if (strcmp(BuscarV, rama->matricula) == 0)
     {
         Bviaje = rama;
 
@@ -187,6 +207,22 @@ void buscarViajeM(char BuscarV[13], viaje *rama){
         
     }
  
+}
+
+void viajeM(char BuscarV[10]){
+
+    if (strcmp(BuscarV, Bviaje->matricula) == 0)
+    {
+        cout<<"Embarcacion: "<<"'"<<Bviaje->nombreEmb<<"'"<<" Con viaje en: "<<" "<<Bviaje->dia<<" "<<
+        Bviaje->mes<<" "<<Bviaje->year<<endl;
+        cout<<"     - Identificador: "<<Bviaje->identi<<endl;
+        cout<<"     - Capacidad: "<<Bviaje->capacidad<<endl;
+        cout<<"     - Destino: "<<Bviaje->destino<<endl;
+        cout<<"     - Precio: "<<Bviaje->precio<<endl;
+    } else {
+
+        cout<<"No se encontro el identificador"<<endl;
+    }
 }
 
 void buscar(char *BuscarV, viaje *Rama){
@@ -257,7 +293,6 @@ void registrarPasajeros(){
         }
         
     }
-    
 
     cont++;
 
@@ -394,6 +429,7 @@ int main(){
                 break;
 
             case 2:
+                cout<<"-------------------------------------------------------------"<<endl;
                 cout<<"Por cual medio desea realizar su busqueda?"<<endl;
                 cout<<endl;
                 cout<<"1.       IDENTIFICADOR."<<endl;
@@ -410,22 +446,18 @@ int main(){
                     cout<<endl;
 
                     buscarViajeI(ident, raiz);
-                    if (ident == Bviaje->identi)
-                    {
-                        cout<<"Embarcación: "<<Bviaje->nombreEmb<<" Con viaje en: "<<" "<<Bviaje->year<<" "<<
-                        Bviaje->mes<<" "<<Bviaje->dia<<endl;
-                        cout<<"- Matricula: "<<Bviaje->matricula<<endl;
-                        cout<<"- Capacidad: "<<Bviaje->capacidad<<endl;
-                        cout<<"- Destino: "<<Bviaje->destino<<endl;
-                        cout<<"- Precio: "<<Bviaje->precio<<endl;
-                    }
+                    viajeI(ident);
                     
                     break;
 
                 case 2:
-                    cout<<"Ingrese la matricula de la embarcación la cual desea obtener: ";
+                    cout<<"Ingrese la matricula de la embarcacion la cual desea obtener: ";
                     cin>>matri;
                     cout<<endl;
+
+                    buscarViajeM(ident,raiz);
+                    viajeM(ident);
+
                     break;
                 
                 default:

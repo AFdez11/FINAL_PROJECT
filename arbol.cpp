@@ -1,14 +1,22 @@
 #include <iostream>
 #include <malloc.h>
 #include <cstring> 
-#include <string>
 
 using namespace std;
+
+struct Pasajero
+{
+    char nombre[30];
+    char apellido[30];
+    char id[10];
+
+    Pasajero *sig;
+};
+
 
 struct viaje{
 
     int altura;
-    
 
     //info del viaje.
     char nombreEmb[30]; //hace referencia al nombre de la embarcación
@@ -22,18 +30,15 @@ struct viaje{
 
     int precio;
     int capacidad;
-
-    //datos del pasajero
-    char nombrePas[20]; //hace referencia al nombre del pasajero
-    char apellidoPas[20];
-    int id;
         
     viaje *izq;
     viaje *der;
     viaje *sig;
+
+    struct Pasajero *cab, *auxP, *auxP2;
 };
 struct viaje *raiz, *aux, *aux2, *Bviaje;
-struct viaje  *cab, *auxP, *auxP2;
+
 
 
 void posicionarIdenti(){
@@ -390,61 +395,61 @@ void registrarPasajeros(viaje *recursive){
     int opcion = 0;
     int cont = 1;
 
+
     do
     {
 
         if (cont <= recursive->capacidad)
         {
-            if (cab == NULL)
+            if (raiz->cab == NULL)
             {
-                cab = (struct viaje *) malloc (sizeof(struct viaje));
+                raiz->cab = (struct Pasajero *) malloc (sizeof(struct Pasajero));
                 cout<<"Ingrese el primer nombre del pasajero: ";
-                cin>>cab->nombrePas;
+                cin>>raiz->cab->nombre;
 
                 cout<<"Ingrese el primer apellido del pasajero: ";
-                cin>>cab->apellidoPas;
+                cin>>raiz->cab->apellido;
 
                 cout<<"Ingrese el ID del pasajero: ";
-                cin>>cab->id;
+                cin>>raiz->cab->id;
 
                 cout<<endl;
                 cout<<"-------------------------"<<endl;
                 cout<<"Pasajero registrado."<<endl;
                 cout<<"-------------------------"<<endl;
 
-                cab->sig = NULL;
+                raiz->cab->sig = NULL;
 
             } else {
             
-                auxP = (struct viaje *) malloc (sizeof(struct viaje));
+                raiz->auxP = (struct Pasajero *) malloc (sizeof(struct Pasajero));
                 cout<<"Ingrese el primer nombre del pasajero: ";
-                cin>>auxP->nombrePas;
+                cin>>raiz->auxP->nombre;
 
                 cout<<"Ingrese el primer apellido del pasajero: ";
-                cin>>auxP->apellidoPas;
+                cin>>raiz->auxP->apellido;
 
                 cout<<"Ingrese el ID del pasajero: ";
-                cin>>auxP->id;
-                auxP->sig = NULL;
-                auxP2 = cab;
+                cin>>raiz->auxP->id;
+                raiz->auxP->sig = NULL;
+                raiz->auxP2 = raiz->cab;
 
                 cout<<endl;
                 cout<<"-------------------------"<<endl;
                 cout<<"Pasajero registrado."<<endl;
                 cout<<"-------------------------"<<endl;
 
-                while (auxP2->sig != NULL)
+                while (raiz->auxP2->sig != NULL)
                 {
-                    auxP2 = auxP2->sig;
-                    auxP2->sig = auxP;
-                    auxP2 = auxP = NULL;
-                    free(auxP2);
-                    free(auxP2);
+                    raiz->auxP2 = raiz->auxP2->sig;
                 }
+                    raiz->auxP2->sig = raiz->auxP;
+                    raiz->auxP2 = raiz->auxP = NULL;
+                    free(raiz->auxP2);
+                    free(raiz->auxP2);
 
-                cab->sig = NULL;
-                auxP = NULL;
-                free(auxP);
+                    free(raiz->auxP);
+                    free(raiz->auxP2);
 
             }
             recursive->capacidad--;
@@ -507,22 +512,22 @@ void asignarViaje(char Buscar[10]){
 
 }
 
-void mostrarP(char Buscar[10]){
+void mostrarP(char Buscar[10], Pasajero *recursive){
     int i = 0; 
     int comparacion = strcmp(Buscar,Bviaje->identi);
 
-    if (cab != NULL)
+    if (raiz->cab!= NULL)
     {
         
         if (comparacion == 0){
 
-            for (auxP = cab; auxP != NULL; auxP=auxP->sig)
+            for (raiz->auxP = raiz->cab; raiz->auxP != NULL; raiz->auxP=raiz->auxP->sig)
             {
                 i++;     
-                cout<<i<<". Nombre del pasajero: "<<auxP->nombrePas<<endl;
-                cout<<". Apellido del pasajero: "<<auxP->apellidoPas<<endl;
-                cout<<". ID del pasajero: "<<auxP->id<<endl;
-                cout<<". Asiento del pasajero: "<<auxP->id<<endl; //cambiar
+                cout<<i<<". Nombre del pasajero: "<<raiz->auxP->nombre<<endl;
+                cout<<". Apellido del pasajero: "<<raiz->auxP->apellido<<endl;
+                cout<<". ID del pasajero: "<<raiz->auxP->id<<endl;
+                /*cout<<". Asiento del pasajero: "<<auxP->id<<endl; //cambiar*/
                 cout<<"-----------------------------------------------------"<<endl;    
             }
 
@@ -629,6 +634,9 @@ int main(){
 
             case 5:
 
+                raiz->cab = NULL;
+                raiz->auxP = NULL;
+                raiz->auxP2 = NULL;
                 verificador();
                 cout<<"Ingrese el identificador de la embarcacion la cual desea abordar: ";
                 cin>>busqueda;
@@ -644,7 +652,7 @@ int main(){
                 cin>>busqueda;
                 buscarP(busqueda,raiz);
                 cout<<endl;
-                mostrarP(busqueda);
+                mostrarP(busqueda, raiz->cab);
                 cout<<endl; 
                 break;
 

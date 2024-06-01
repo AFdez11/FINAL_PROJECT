@@ -39,7 +39,7 @@ struct viaje{
     Pasajero *cab;
 
 };
-struct viaje *raiz, *aux, *aux2, *Bviaje;
+struct viaje *raiz, *aux, *aux2, *Bviaje, *padre;
 struct Pasajero *auxP, *auxP2;
 
 
@@ -371,6 +371,8 @@ struct viaje* insertar(struct viaje* viaje)
     return viaje;
 }
 
+// Recorrido
+
 void InOrden (viaje *recursive){
    
     if (recursive->izq != NULL){
@@ -386,6 +388,120 @@ void InOrden (viaje *recursive){
         InOrden(recursive->der);
     }
 
+}
+
+
+// Eliminar
+
+void buscarpadre(viaje *rama){
+	
+    if ((rama->izq != NULL)&&(rama->izq != Bviaje))
+    {
+        buscarpadre(rama->izq);
+
+    } else if (rama->izq == Bviaje){
+
+        padre = rama;
+    }
+    
+    if ((rama->der != NULL)&&(rama->der != Bviaje))
+    {
+        buscarpadre(rama->der);
+
+    } else if (rama->der == Bviaje){
+        
+        padre = rama;
+    }
+}
+
+int eliminarCaso1(viaje *rama){
+
+    if (Bviaje != rama)
+    {
+        buscarpadre(rama);
+
+        if (padre->izq == Bviaje)
+        {
+            padre->izq = NULL;
+
+        } else if (padre->der == Bviaje){
+
+            padre->der = NULL;
+
+        }
+        free(Bviaje);
+    }
+    return 0;
+}
+
+int eliminarCaso2(viaje *rama){
+
+    if (Bviaje != rama)
+    {
+        buscarpadre(rama);
+
+        if ((padre->izq == Bviaje) && (padre->izq != NULL))
+        {
+            padre->izq = Bviaje->izq;
+        } else {
+
+            padre->izq = Bviaje->der;
+        }
+        
+    } else if (padre->der == Bviaje){
+        
+        if (Bviaje->izq != NULL)
+        {
+            padre->der = Bviaje->izq;
+        } else {
+            padre->der = Bviaje->der;
+        }
+        
+        free(Bviaje);
+    }
+    return 0;
+}
+
+void eliminar (){
+
+    char buscarIdenti[10]; //lo utilizaremos para almacenar el código a eliminar
+
+    cout<<"Ingrese el identificador unico de la embarcacion a eliminar: ";
+    cin>>buscarIdenti;
+
+    cout<<endl;
+
+    buscar(buscarIdenti, raiz);
+    if ((Bviaje->der == NULL) && (Bviaje->izq == NULL)){
+       
+        eliminarCaso1(raiz);
+        cout<<"Embarcacion eliminada."<<endl;
+
+    } else if ((Bviaje->der == NULL) && (Bviaje->der != NULL)  &&
+              (Bviaje->izq == NULL) && (Bviaje->izq != NULL)){
+
+        eliminarCaso2(raiz);
+        cout<<"Embarcacion eliminada."<<endl;    
+
+    } else if (buscarIdenti == raiz->identi){
+        raiz = NULL;
+    }
+   
+    buscar(buscarIdenti, raiz);
+    if ((Bviaje->der == NULL) && (Bviaje->izq == NULL)){
+
+        eliminarCaso1(raiz);
+
+    } else if ((Bviaje->der == NULL) && (Bviaje->der != NULL)  &&
+              (Bviaje->izq == NULL)   && (Bviaje->izq != NULL)){
+
+        eliminarCaso2(raiz); 
+
+    } else if (buscarIdenti == raiz->identi){
+
+        raiz = NULL;
+    }
+    
 }
 
 
@@ -476,7 +592,6 @@ void registrarPasajeros(viaje *recursive){
     
 }
 
-
 void asignarViaje(char buscar[10]){
 
     int comparacion;
@@ -518,7 +633,6 @@ void verificadorR(char buscar[10]){    //se encarga de verificar que haya embarc
     }
 
 }
-
 
 void mostrarP(char Buscar[10]){
     int i = 0; 
@@ -569,8 +683,6 @@ void verificadorL(char buscar[10]){    //se encarga de verificar que haya embarc
     }
 
 }
-
-
 
 int main(){
 

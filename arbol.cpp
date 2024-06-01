@@ -16,6 +16,7 @@ struct Pasajero
 
 struct viaje{
 
+    int cont;
     int altura;
 
     //info del viaje.
@@ -35,9 +36,11 @@ struct viaje{
     viaje *der;
     viaje *sig;
 
-    struct Pasajero *cab, *auxP, *auxP2;
+    Pasajero *cab;
+
 };
 struct viaje *raiz, *aux, *aux2, *Bviaje;
+struct Pasajero *auxP, *auxP2;
 
 
 
@@ -191,8 +194,6 @@ void viajeI(char BuscarV[10]){
         cout<<"No se encontro el identificador"<<endl;
     }
 
-    Bviaje = NULL;
-    
 }
 
 void buscarViajeM(char BuscarV[10], viaje *rama){ //Buscar viaje por medio de la matricula
@@ -233,7 +234,6 @@ void viajeM(char BuscarV[10]){
         cout<<"No se encontro el identificador"<<endl;
     }
 
-    Bviaje = NULL;
 }
 
 void buscar(char Buscar[10], viaje *Rama){
@@ -388,6 +388,7 @@ void InOrden (viaje *recursive){
 
 }
 
+
 //Funciones Pasajeros (FIFO)
 
 void registrarPasajeros(viaje *recursive){
@@ -422,34 +423,34 @@ void registrarPasajeros(viaje *recursive){
 
             } else {
             
-                raiz->auxP = (struct Pasajero *) malloc (sizeof(struct Pasajero));
+                auxP = (struct Pasajero *) malloc (sizeof(struct Pasajero));
                 cout<<"Ingrese el primer nombre del pasajero: ";
-                cin>>raiz->auxP->nombre;
+                cin>>auxP->nombre;
 
                 cout<<"Ingrese el primer apellido del pasajero: ";
-                cin>>raiz->auxP->apellido;
+                cin>>auxP->apellido;
 
                 cout<<"Ingrese el ID del pasajero: ";
-                cin>>raiz->auxP->id;
-                raiz->auxP->sig = NULL;
-                raiz->auxP2 = raiz->cab;
+                cin>>auxP->id;
+                auxP->sig = NULL;
+                auxP2 = raiz->cab;
 
                 cout<<endl;
                 cout<<"-------------------------"<<endl;
                 cout<<"Pasajero registrado."<<endl;
                 cout<<"-------------------------"<<endl;
 
-                while (raiz->auxP2->sig != NULL)
+                while (auxP2->sig != NULL)
                 {
-                    raiz->auxP2 = raiz->auxP2->sig;
+                    auxP2 = auxP2->sig;
                 }
-                    raiz->auxP2->sig = raiz->auxP;
-                    raiz->auxP2 = raiz->auxP = NULL;
-                    free(raiz->auxP2);
-                    free(raiz->auxP2);
+                    auxP2->sig = auxP;
+                    auxP2 = auxP = NULL;
+                    free(auxP2);
+                    free(auxP2);
 
-                    free(raiz->auxP);
-                    free(raiz->auxP2);
+                    free(auxP);
+                    free(auxP2);
 
             }
             recursive->capacidad--;
@@ -475,7 +476,25 @@ void registrarPasajeros(viaje *recursive){
     
 }
 
-void verificador(){
+
+void asignarViaje(char buscar[10]){
+
+    int comparacion;
+    comparacion = strcmp(buscar, Bviaje->identi);
+
+    if (comparacion == 0){
+
+        registrarPasajeros(raiz);
+
+    } else {
+
+        cout<<"Identificador no valido."<<endl;
+    }
+
+}
+
+void verificadorR(char buscar[10]){    //se encarga de verificar que haya embarcaciones disponibles y de paso asigna el viaje
+    
 
     if (raiz != NULL)
     { 
@@ -487,6 +506,10 @@ void verificador(){
         InOrden(raiz);
         cout<<endl;
 
+        cout<<"Ingrese el identificador de la embarcacion la cual desea abordar: ";
+        cin>>buscar;      
+        buscarP(buscar, raiz);
+        asignarViaje(buscar);
 
     } else {
 
@@ -496,52 +519,54 @@ void verificador(){
 
 }
 
-void asignarViaje(char Buscar[10]){
-    int comparacion = strcmp(Buscar, Bviaje->identi);
 
+void mostrarP(char Buscar[10]){
+    int i = 0; 
+    int comparacion;
+    comparacion = strcmp(Buscar,Bviaje->identi);
+        
     if (comparacion == 0){
-
-        registrarPasajeros(raiz);
-
+        for (auxP = raiz->cab; auxP != NULL; auxP=auxP->sig)
+        {
+            i++;
+            cout<<i<<". Nombre del pasajero: "<<auxP->nombre<<endl;
+            cout<<". Apellido del pasajero: "<<auxP->apellido<<endl;
+            cout<<". ID del pasajero: "<<auxP->id<<endl;
+            /*cout<<". Asiento del pasajero: "<<auxP->id<<endl; //cambiar*/
+            cout<<"-----------------------------------------------------"<<endl;    
+        }
     } else {
-
         cout<<"Identificador no valido."<<endl;
     }
-    
-    Bviaje = NULL;
+
 
 }
 
-void mostrarP(char Buscar[10], Pasajero *recursive){
-    int i = 0; 
-    int comparacion = strcmp(Buscar,Bviaje->identi);
+void verificadorL(char buscar[10]){    //se encarga de verificar que haya embarcaciones disponibles y de paso lista los pasajeros de x embarcación
 
-    if (raiz->cab!= NULL)
-    {
-        
-        if (comparacion == 0){
+    
+    if (raiz != NULL)
+    { 
 
-            for (raiz->auxP = raiz->cab; raiz->auxP != NULL; raiz->auxP=raiz->auxP->sig)
-            {
-                i++;     
-                cout<<i<<". Nombre del pasajero: "<<raiz->auxP->nombre<<endl;
-                cout<<". Apellido del pasajero: "<<raiz->auxP->apellido<<endl;
-                cout<<". ID del pasajero: "<<raiz->auxP->id<<endl;
-                /*cout<<". Asiento del pasajero: "<<auxP->id<<endl; //cambiar*/
-                cout<<"-----------------------------------------------------"<<endl;    
-            }
+        cout<<"***********************************"<<endl;
+        cout<<"Los viajes disponibles son: "<<endl;
+        cout<<"***********************************"<<endl;
 
-        } else {
+        InOrden(raiz);
+        cout<<endl;
 
-            cout<<"Identificador no valido."<<endl;
-        }
+        cout<<"Ingrese el identificador de la embarcacion sobre la cual desea obtener los pasajeros: ";
+        cin>>buscar;
+        buscarP(buscar,raiz);
+        cout<<endl;
+        mostrarP(buscar);
+        cout<<endl; 
 
     } else {
 
-        cout<<"No hay pasajeros en la embarcacion"<<endl;
+        cout<<"No hay viajes disponibles."<<endl;
+
     }
-    
-    Bviaje = NULL;
 
 }
 
@@ -635,29 +660,17 @@ int main(){
             case 5:
 
                 raiz->cab = NULL;
-                raiz->auxP = NULL;
-                raiz->auxP2 = NULL;
-                verificador();
-                cout<<"Ingrese el identificador de la embarcacion la cual desea abordar: ";
-                cin>>busqueda;
-                buscar(busqueda, raiz);
-                asignarViaje(busqueda);
-                cout<<endl; 
+                auxP = NULL;
+                auxP2 = NULL;     
+                verificadorR(busqueda);
                 break;
                 
             case 6:
-                
-                verificador();
-                cout<<"Ingrese el identificador de la embarcacion sobre la cual desea obtener los pasajeros: ";
-                cin>>busqueda;
-                buscarP(busqueda,raiz);
-                cout<<endl;
-                mostrarP(busqueda, raiz->cab);
-                cout<<endl; 
+                verificadorL(busqueda);
                 break;
 
             case 7:
-                cout<<"Gracias por confiar en nosotros :)"<<endl;
+                cout<<"Gracias por confiar en nosotros. :)"<<endl;
                 break;
 
             default:

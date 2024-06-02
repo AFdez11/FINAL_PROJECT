@@ -16,7 +16,6 @@ struct Pasajero
 
 struct viaje{
 
-    int cont;
     int altura;
 
     //info del viaje.
@@ -42,49 +41,6 @@ struct viaje{
 struct viaje *raiz, *aux, *aux2, *Bviaje, *padre;
 struct Pasajero *auxP, *auxP2;
 
-
-
-void posicionarIdenti(){
-
-    int comparacion = strcmp(aux->identi,aux2->identi);
-
-    if (comparacion < 0) {
-
-        if (aux2->izq != NULL){
-            aux2 = aux2->izq;
-            posicionarIdenti();
-        } else {
-            aux2->izq = aux;
-            aux = NULL;
-        }
-        
-    } else if (comparacion > 0){
-        
-        if(aux2->der != NULL){
-            aux2 = aux2->der;
-            posicionarIdenti();
-        }   
-        else {
-
-            aux2->der = aux;
-            aux = NULL;
-        }
-        
-    } else {
-
-        if(aux2->der != NULL){
-            aux2 = aux2->der;
-            posicionarIdenti();
-        }   
-        else {
-
-            aux2->der = aux;
-            aux = NULL;
-        }
-
-    }
-
-}
 
 void datosViaje(){
 
@@ -116,6 +72,7 @@ void datosViaje(){
     cout<<"Ingrese el a"<<char(164) <<"o del viaje numericamente (YYYY): ";
     cin>>aux->year;
 
+    aux->altura = 1;
 
     strcpy(primerosDos, aux->matricula);
     
@@ -130,33 +87,14 @@ void datosViaje(){
     strcat(aux->identi,aux->dia);
 
     aux->izq = aux->der = NULL;
-    aux->altura = 1;
 
     cout<<endl;
     cout<<"**********************************"<<endl;
     cout<<"Su identificador es: "<<aux->identi<<endl;
     cout<<"**********************************"<<endl;
-}
-
-void registrarViaje(){
-    datosViaje();
-    
-    cout<<endl;
-    cout<<"---------------------------"<<endl;
-    cout<<"Viaje registrado con exito."<<endl;
-    cout<<"---------------------------"<<endl;
-
-    if (raiz == NULL){ 
-    
-        raiz = aux;
-        aux = NULL;
-        free(aux);
-    }else {
-        aux2 = raiz;
-        posicionarIdenti();
-    }
     
 }
+
 
 void buscarViajeI(char BuscarV[10], viaje *rama){ //será utilizado para buscar el viaje por medio del identificador
     
@@ -193,6 +131,8 @@ void viajeI(char BuscarV[10]){
 
         cout<<"No se encontro el identificador"<<endl;
     }
+
+    Bviaje = NULL;
 
 }
 
@@ -234,31 +174,16 @@ void viajeM(char BuscarV[10]){
         cout<<"No se encontro el identificador"<<endl;
     }
 
+    Bviaje = NULL;
+
 }
 
-void buscar(char Buscar[10], viaje *Rama){
-
-    if (strcmp(Buscar, Rama->identi) == 0)
-    {
-        Bviaje = Rama;
-
-    } else {
-
-        if (Rama->izq != NULL){
-
-            buscar(Buscar, Rama->izq);
-        }
-        if (Rama->der != NULL){
-            
-            buscar(Buscar, Rama->der);
-        }
-        
-    }
-}
 
 void buscarP(char Buscar[10], viaje *Rama){ //Se buscaran los pasajeros de una embarcación en específico
 
-    if (strcmp(Buscar, Rama->identi) == 0)
+    int comparacion = strcmp(Buscar, Rama->identi);
+
+    if (comparacion == 0)
     {
         Bviaje = Rama;
 
@@ -348,7 +273,7 @@ struct viaje* insertar(struct viaje* viaje)
 
     viaje->altura = 1 + mayor(ObtenerAltura(viaje->izq), ObtenerAltura(viaje->der));
     
-     int balance = ObtenerAltura(viaje);
+    int balance = ObtenerBalance(viaje);
 
     if (balance > 1 && aux->identi < viaje->izq->identi) {
         return rotarDerecha(viaje);
@@ -392,6 +317,25 @@ void InOrden (viaje *recursive){
 
 
 // Eliminar
+void buscar(char Buscar[10], viaje *Rama){
+
+    if (strcmp(Buscar, Rama->identi) == 0)
+    {
+        Bviaje = Rama;
+
+    } else {
+
+        if (Rama->izq != NULL){
+
+            buscar(Buscar, Rama->izq);
+        }
+        if (Rama->der != NULL){
+            
+            buscar(Buscar, Rama->der);
+        }
+        
+    }
+}
 
 void buscarpadre(viaje *rama){
 	
@@ -429,6 +373,7 @@ int eliminarCaso1(viaje *rama){
             padre->der = NULL;
 
         }
+        Bviaje = NULL;
         free(Bviaje);
     }
     return 0;
@@ -457,6 +402,7 @@ int eliminarCaso2(viaje *rama){
             padre->der = Bviaje->der;
         }
         
+        Bviaje = NULL;
         free(Bviaje);
     }
     return 0;
@@ -464,7 +410,7 @@ int eliminarCaso2(viaje *rama){
 
 void eliminar (){
 
-    char buscarIdenti[10]; //lo utilizaremos para almacenar el código a eliminar
+    char buscarIdenti[10]; //lo utilizaremos para almacenar el identificador a eliminar
 
     cout<<"Ingrese el identificador unico de la embarcacion a eliminar: ";
     cin>>buscarIdenti;
@@ -486,28 +432,13 @@ void eliminar (){
     } else if (buscarIdenti == raiz->identi){
         raiz = NULL;
     }
-   
-    buscar(buscarIdenti, raiz);
-    if ((Bviaje->der == NULL) && (Bviaje->izq == NULL)){
-
-        eliminarCaso1(raiz);
-
-    } else if ((Bviaje->der == NULL) && (Bviaje->der != NULL)  &&
-              (Bviaje->izq == NULL)   && (Bviaje->izq != NULL)){
-
-        eliminarCaso2(raiz); 
-
-    } else if (buscarIdenti == raiz->identi){
-
-        raiz = NULL;
-    }
     
 }
 
 
 //Funciones Pasajeros (FIFO)
 
-void registrarPasajeros(viaje *recursive){
+void registrarPasajeros(){
 
     int opcion = 0;
     int cont = 1;
@@ -516,7 +447,7 @@ void registrarPasajeros(viaje *recursive){
     do
     {
 
-        if (cont <= recursive->capacidad)
+        if (cont <= Bviaje->capacidad)
         {
             if (raiz->cab == NULL)
             {
@@ -569,7 +500,7 @@ void registrarPasajeros(viaje *recursive){
                     free(auxP2);
 
             }
-            recursive->capacidad--;
+            Bviaje->capacidad--;
 
             cout<<endl;
             cout<<"Desea agregar otro pasajero a esta embarcacion?"<<endl;
@@ -599,7 +530,7 @@ void asignarViaje(char buscar[10]){
 
     if (comparacion == 0){
 
-        registrarPasajeros(raiz);
+        registrarPasajeros();
 
     } else {
 
@@ -607,6 +538,7 @@ void asignarViaje(char buscar[10]){
     }
 
 }
+
 
 void verificadorR(char buscar[10]){    //se encarga de verificar que haya embarcaciones disponibles y de paso asigna el viaje
     
@@ -624,6 +556,7 @@ void verificadorR(char buscar[10]){    //se encarga de verificar que haya embarc
         cout<<"Ingrese el identificador de la embarcacion la cual desea abordar: ";
         cin>>buscar;      
         buscarP(buscar, raiz);
+        cout<<"Embarcacion encontrada con exito."<<endl;
         asignarViaje(buscar);
 
     } else {
@@ -634,7 +567,7 @@ void verificadorR(char buscar[10]){    //se encarga de verificar que haya embarc
 
 }
 
-void mostrarP(char Buscar[10]){
+void mostrarP(char Buscar[10]){ //Imprime a los pasajeros de x embarcación
     int i = 0; 
     int comparacion;
     comparacion = strcmp(Buscar,Bviaje->identi);
@@ -653,7 +586,7 @@ void mostrarP(char Buscar[10]){
         cout<<"Identificador no valido."<<endl;
     }
 
-
+    Bviaje = NULL;
 }
 
 void verificadorL(char buscar[10]){    //se encarga de verificar que haya embarcaciones disponibles y de paso lista los pasajeros de x embarcación
@@ -681,6 +614,8 @@ void verificadorL(char buscar[10]){    //se encarga de verificar que haya embarc
         cout<<"No hay viajes disponibles."<<endl;
 
     }
+
+    Bviaje = NULL;
 
 }
 
@@ -715,7 +650,8 @@ int main(){
             
             case 1:
 
-                registrarViaje();
+                datosViaje();
+                raiz = insertar(raiz);
                 cout<<endl;
                 
                 break;
@@ -768,7 +704,10 @@ int main(){
                 break;
 
             case 4:
-
+                eliminar();
+                ObtenerBalance(raiz);
+                cout<<endl;
+                break;
             case 5:
 
                 raiz->cab = NULL;

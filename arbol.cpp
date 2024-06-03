@@ -266,43 +266,82 @@ int ObtenerBalance(struct viaje *n){
 
 struct viaje* insertar(struct viaje* viaje)
 {
-    if (viaje == NULL){
+    
+    if (viaje == NULL)
+    {
         return aux;
-    }
-
-    if (aux->identi < viaje->identi) {
+    } else if (strcmp(aux->identi, viaje->identi) < 0)
+    {
         viaje->izq = insertar(viaje->izq);
-    } else if (aux->identi > viaje->identi) {
+
+    } else if (strcmp (aux->identi, viaje->identi) > 0)
+    {
         viaje->der = insertar(viaje->der);
-    } else {
-        return viaje;
     }
 
     viaje->altura = 1 + mayor(ObtenerAltura(viaje->izq), ObtenerAltura(viaje->der));
     
-    int balance = ObtenerBalance(viaje);
+    int balanceo = ObtenerBalance(viaje);
 
-    if (balance > 1 && aux->identi < viaje->izq->identi) {
+    if ((balanceo > 1) && strcmp(aux->identi, viaje->identi) < 0)
+    {
+        return rotarDerecha(viaje);
+
+    } if ((balanceo < -1) && strcmp(aux->identi, viaje->identi) > 0) {
+
+        return rotarIzquierda(viaje);
+
+    } if ((balanceo < -1) && strcmp(aux->identi, viaje->identi) < 0) {
+
+        viaje->der = rotarDerecha(viaje);
+        return rotarIzquierda(viaje);
+
+    } if ((balanceo > 1) && strcmp(aux->identi, viaje->identi) > 0) {
+
+        viaje->izq = rotarIzquierda(viaje);
         return rotarDerecha(viaje);
     }
-
-    if (balance < -1 && aux->identi > viaje->der->identi) {
-        return rotarIzquierda(viaje);
-    }
-
-    if (balance > 1 && aux->identi > viaje->izq->identi) {
-        viaje->izq = rotarIzquierda(viaje->izq);
-        return rotarDerecha(viaje);
-    }
-
-    if (balance < -1 && aux->identi < viaje->der->identi) {
-        viaje->der = rotarDerecha(viaje->der);
-        return rotarIzquierda(viaje);
-    }
-
+    
     return viaje;
 }
 
+struct viaje *Balance(struct viaje *embarcacion){
+
+    if (embarcacion->izq != NULL)
+    {
+        embarcacion->izq = Balance(embarcacion->izq);
+
+    } if (embarcacion->der != NULL) {
+
+        embarcacion->der = Balance(embarcacion->der);
+    }
+
+    embarcacion->altura = 1 + mayor(ObtenerAltura(embarcacion->izq), ObtenerAltura(embarcacion->der));
+    
+    int balanceo = ObtenerBalance(embarcacion);
+
+    if ((balanceo > 1) && strcmp(aux->identi, embarcacion->identi) < 0)
+    {
+        return rotarDerecha(embarcacion);
+
+    } if ((balanceo < -1) && strcmp(aux->identi, embarcacion->identi) > 0) {
+
+        return rotarIzquierda(embarcacion);
+
+    } if ((balanceo < -1) && strcmp(aux->identi, embarcacion->identi) < 0) {
+
+        embarcacion->der = rotarDerecha(embarcacion);
+        return rotarIzquierda(embarcacion);
+
+    } if ((balanceo > 1) && strcmp(aux->identi, embarcacion->identi) > 0) {
+
+        embarcacion->izq = rotarIzquierda(embarcacion);
+        return rotarDerecha(embarcacion);
+    }
+    
+    return embarcacion;
+
+}
 
 // RECORRIDO
 
@@ -343,6 +382,22 @@ void buscar(char Buscar[10], viaje *Rama){
         }
         
     }
+}
+
+int reubicar(struct viaje *recursive){
+
+    if (recursive == NULL)
+    {
+        cout<<"No hay viajes disponibles."<<endl;
+    } else if (recursive->izq != NULL){
+        reubicar(recursive->izq);
+    } else {
+
+        aux = recursive;
+    }
+    
+
+    return 0;
 }
 
 void buscarpadre(viaje *rama){
@@ -416,20 +471,79 @@ int eliminarCaso2(viaje *rama){
     return 0;
 }
 
-int reubicar(struct viaje *recursive){
+int eliminarCaso3(struct viaje *caso3){
 
-    if (recursive == NULL)
+    int verifi2;
+
+    char nombreEmb2[30]; 
+    char destino2 [30]; 
+    char matricula2[10]; 
+    char identi2 [10];
+     
+    char dia2[03];
+    char mes2[03];
+    char year2[05];
+
+    int precio2;
+    int capacidad2;
+    
+    buscarpadre(caso3);
+    reubicar(Bviaje->der);
+
+    verifi2 = Bviaje->verifi;
+    Bviaje->verifi = aux->verifi;
+    aux->verifi = verifi2;
+
+    strcpy(nombreEmb2, Bviaje->nombreEmb);
+    strcpy(destino2, Bviaje->destino);
+    strcpy(matricula2, Bviaje->matricula);
+    strcpy(identi2, Bviaje->identi);
+    strcpy(dia2, Bviaje->dia);
+    strcpy(mes2, Bviaje->mes);
+    strcpy(year2, Bviaje->year);
+
+    capacidad2 = Bviaje->capacidad;
+    precio2 = Bviaje->precio;
+    auxP = Bviaje->cab;
+
+
+    strcpy(Bviaje->nombreEmb, aux->nombreEmb);
+    strcpy(Bviaje->destino, aux->destino);
+    strcpy(Bviaje->matricula, aux->matricula);
+    strcpy(Bviaje->identi, aux->identi);
+    strcpy(Bviaje->dia, aux->dia);
+    strcpy(Bviaje->mes, aux->mes);
+    strcpy(Bviaje->year, aux->year);
+
+    Bviaje->capacidad = aux->capacidad;
+    Bviaje->precio = aux->precio;
+    Bviaje->cab = aux->cab;
+
+
+    strcpy(aux->nombreEmb, nombreEmb2);
+    strcpy(aux->destino, destino2);
+    strcpy(aux->matricula, matricula2);
+    strcpy(aux->identi, identi2);
+    strcpy(aux->dia, dia2);
+    strcpy(aux->mes, mes2);
+    strcpy(aux->year, year2);
+
+    aux->capacidad = capacidad2;
+    aux->precio = precio2;
+    aux->cab = auxP;
+
+    buscar(aux->identi, caso3);
+    buscarpadre(caso3);
+
+    if (((aux->der != NULL) && (aux->izq == NULL)) || ((aux->izq != NULL) && (aux->der == NULL)))
     {
-        cout<<"No hay viajes disponibles."<<endl;
-    } else if (recursive->izq != NULL){
-        reubicar(recursive->izq);
+        eliminarCaso2(caso3);
     } else {
 
-        aux = recursive;
+        eliminarCaso1(caso3);
     }
     
 
-    return 0;
 }
 
 void eliminar (){
@@ -447,17 +561,16 @@ void eliminar (){
         eliminarCaso1(raiz);
         cout<<"Embarcacion eliminada."<<endl;
 
-    } else if ((Bviaje->der == NULL) && (Bviaje->der != NULL)  &&
-              (Bviaje->izq == NULL) && (Bviaje->izq != NULL)){
+    } else if (((Bviaje->der == NULL) && (Bviaje->der != NULL)) ||
+              ((Bviaje->izq == NULL) && (Bviaje->izq != NULL))){
 
         eliminarCaso2(raiz);
         cout<<"Embarcacion eliminada."<<endl;    
 
-    } else if (buscarIdenti == raiz->identi){
-        raiz = NULL;
+    } else if ((Bviaje->der != NULL) && (Bviaje->izq != NULL)){
+        eliminarCaso3(raiz);
+        cout<<"Embarcacion eliminada."<<endl; 
     }
-
-    raiz = insertar(raiz);
     
 }
 

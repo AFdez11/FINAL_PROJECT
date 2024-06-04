@@ -1,3 +1,7 @@
+//Created by:
+//Luis Cabezas Pinillo: Catador de colchones y Stan lee los fines de semana.
+//Andres Fernández Riascos: CEO de Odebretch y (aun sigue siendo Batman).
+
 #include <iostream>
 #include <malloc.h>
 #include <cstring> 
@@ -799,6 +803,7 @@ int main(){
             case 4:
             
                 eliminar();
+                raiz = Balance(raiz);
                 cout<<endl;
                 break;
             case 5:    
